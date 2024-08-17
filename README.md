@@ -174,67 +174,61 @@ HTwebChromeAutomate.set_user_profile_dir(r"C:\Users\YourUsername\AppData\Local\G
 
 # Launch Chrome and open the target URL
 HTwebChromeAutomate.launch_chrome_and_open_a_URL("https://www.example.com")
+# Inject JavaScript to scrape data and download it
+js_code = """
+(function() {
+    // Collect all <p> elements on the page
+    const paragraphs = document.querySelectorAll('p');
 
-# Wait for Chrome to be ready
-if HTwebChromeAutomate.is_chrome_ready():
-    print("Chrome is ready.")
+    // Extract the text content from each <p> element
+    let textContent = '';
+    paragraphs.forEach(p => {
+        textContent += p.textContent + '\\n\\n'; // Add a double newline between paragraphs
+    });
 
-    # JavaScript code to scrape data and save it to a file
-    js_code = """
-    // Select the <div> element with a specific class name
-    const dataDiv = document.querySelector('.data-class'); // Replace '.data-class' with your target element selector
+    // Create a Blob with the text content
+    const blob = new Blob([textContent], { type: 'text/plain' });
 
-    // Check if the element exists
-    if (dataDiv) {
-        // Get the text content
-        const dataContent = dataDiv.textContent.trim();
+    // Create a link element and set the href to the Blob URL
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'scraped_data.txt';
 
-        // Create a Blob with the data content
-        const blob = new Blob([dataContent], { type: 'text/plain' });
+    // Append the link to the document body
+    document.body.appendChild(link);
 
-        // Create a download link for the Blob
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'scraped_data.txt'; // Name of the file to be downloaded
-        document.body.appendChild(a);
-        a.click();
+    // Trigger the download by programmatically clicking the link
+    link.click();
 
-        // Clean up
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    } else {
-        console.log('Element not found.');
-    }
-    """
+    // Clean up by removing the link element
+    document.body.removeChild(link);
+})();
+"""
 
-    # Inject JavaScript to scrape data and download it
-    HTwebChromeAutomate.inject_js(js_code)
-    time.sleep(0.7)
+HTwebChromeAutomate.inject_js(js_code)
+time.sleep(1)  # Allow time for the download to complete
 
-    # Path to the downloaded file
-    downloads_dir = r"C:\Users\YourUsername\Downloads"  # Change this to your actual Downloads directory
-    file_path = os.path.join(downloads_dir, 'scraped_data.txt')
+# Path to the downloaded file
+downloads_dir = r"C:\Users\YourUsername\Downloads"  # Adjust as needed
+file_path = os.path.join(downloads_dir, 'scraped_data.txt')
 
-    # Read the downloaded file
-    if os.path.exists(file_path):
-        with open(file_path, 'r') as file:
-            file_content = file.read()
-            print("File Content:", file_content)
+# Read the downloaded file
+if os.path.exists(file_path):
+    with open(file_path, 'r') as file:
+        file_content = file.read()
+        print("File Content:", file_content)
 
-        # Wait 500 milliseconds
-        time.sleep(0.5)
+    # Wait 500 milliseconds
+    time.sleep(0.5)
 
-        # Delete the file
-        os.remove(file_path)
-        print("File deleted.")
-    else:
-        print("File not found.")
-
-    # Close Chrome
-    HTwebChromeAutomate.close_chrome()
+    # Delete the file
+    os.remove(file_path)
+    print("File deleted.")
 else:
-    print("Failed to start Chrome.")
+    print("File not found.")
+
+# Close Chrome
+HTwebChromeAutomate.close_chrome()
 ```
 
 ### Explanation:
