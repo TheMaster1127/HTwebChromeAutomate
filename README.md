@@ -157,4 +157,109 @@ for url in urls:
 HTwebChromeAutomate.close_chrome()
 ```
 
+### Example 4: Web Scraping and File Management
+
+The example assumes you want to scrape data from a webpage and save it to a file, which you will then read and delete after a brief pause. Make sure you adjust the paths and URLs to fit your use case.
+
+#### 1. Set Up the Script
+
+```python
+import HTwebChromeAutomate
+import os
+import time
+
+# Set paths for Chrome and user profile directory
+HTwebChromeAutomate.set_chrome_path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
+HTwebChromeAutomate.set_user_profile_dir(r"C:\Users\YourUsername\AppData\Local\Google\Chrome\User Data")
+
+# Launch Chrome and open the target URL
+HTwebChromeAutomate.launch_chrome_and_open_a_URL("https://www.example.com")
+
+# Wait for Chrome to be ready
+if HTwebChromeAutomate.is_chrome_ready():
+    print("Chrome is ready.")
+
+    # JavaScript code to scrape data and save it to a file
+    js_code = """
+    // Select the <div> element with a specific class name
+    const dataDiv = document.querySelector('.data-class'); // Replace '.data-class' with your target element selector
+
+    // Check if the element exists
+    if (dataDiv) {
+        // Get the text content
+        const dataContent = dataDiv.textContent.trim();
+
+        // Create a Blob with the data content
+        const blob = new Blob([dataContent], { type: 'text/plain' });
+
+        // Create a download link for the Blob
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'scraped_data.txt'; // Name of the file to be downloaded
+        document.body.appendChild(a);
+        a.click();
+
+        // Clean up
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    } else {
+        console.log('Element not found.');
+    }
+    """
+
+    # Inject JavaScript to scrape data and download it
+    HTwebChromeAutomate.inject_js(js_code)
+    time.sleep(0.7)
+
+    # Path to the downloaded file
+    downloads_dir = r"C:\Users\YourUsername\Downloads"  # Change this to your actual Downloads directory
+    file_path = os.path.join(downloads_dir, 'scraped_data.txt')
+
+    # Read the downloaded file
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            file_content = file.read()
+            print("File Content:", file_content)
+
+        # Wait 500 milliseconds
+        time.sleep(0.5)
+
+        # Delete the file
+        os.remove(file_path)
+        print("File deleted.")
+    else:
+        print("File not found.")
+
+    # Close Chrome
+    HTwebChromeAutomate.close_chrome()
+else:
+    print("Failed to start Chrome.")
+```
+
+### Explanation:
+
+1. **Set Paths:**
+   - `set_chrome_path` and `set_user_profile_dir` are used to configure the paths to the Chrome executable and the user profile directory.
+
+2. **Launch Chrome:**
+   - `launch_chrome_and_open_a_URL` starts Chrome with the specified URL.
+
+3. **Check Chrome Readiness:**
+   - `is_chrome_ready` ensures Chrome is fully loaded and the debugging endpoint is available.
+
+4. **Inject JavaScript:**
+   - The `js_code` string contains JavaScript to select an element, extract its content, create a Blob, and trigger a download of the file.
+
+5. **Read and Delete File:**
+   - The script reads the downloaded file from the Downloads directory, prints its content, waits for 500 milliseconds, and then deletes the file.
+
+6. **Close Chrome:**
+   - `close_chrome` terminates the Chrome process.
+
+### Notes:
+- Ensure the JavaScript selector (e.g., `.data-class`) matches the element you want to scrape.
+- Modify file paths and sleep durations as needed based on your environment and requirements.
+- This script is designed for Windows OS. Adjust paths and file operations accordingly if you are using a different operating system.
+
 **Note**: This library is intended for Windows OS. Make sure to have all dependencies installed and Chrome properly configured.
