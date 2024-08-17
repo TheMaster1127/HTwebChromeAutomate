@@ -61,8 +61,7 @@ Closes the Chrome browser.
 
 ## Usage Instructions
 
-1. **Set Up Chrome Profile**: Before running your automation tasks, create a Chrome profile folder and configure Chrome with your desired settings. This includes signing into Chrome if necessary. 
-
+1. **Set Up Chrome Profile**: Before running your automation tasks, create a Chrome profile folder you must manually have already created a folder that is empty.
 2. **Initial Setup**: Set `initial_setup=True` when calling `launch_chrome_and_open_a_URL` to perform the initial setup. After launching Chrome, manually configure it as needed, then remove or set the `initial_setup` parameter to `False` for subsequent runs.
 
 3. **Running Automation**: Use the functions to automate tasks in Chrome. Ensure that the profile directory is correctly set up and that Chrome is properly configured before proceeding with automation tasks.
